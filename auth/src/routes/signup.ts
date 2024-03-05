@@ -1,12 +1,9 @@
 import express, { Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
+import { validationRequest, BadRequestError } from '@migulai_org/common';
 
-
-import { validationRequest } from '../middlewares/validation_middleware';
-import { RequestValidationError } from '../errors/request_validation_error';
 import { User } from '../models/user';
-import { BadRequestError } from '../errors/bad_request_error';
 
 const router = express.Router();
 

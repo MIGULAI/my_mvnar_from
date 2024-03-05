@@ -1,25 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: client-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: client
   template:
     metadata:
       labels:
-        app: auth
+        app: client
     spec:
       containers:
-      - name: auth
-        image: migulai/lecture-3-auth
+      - name: client
+        image: migulai/lecture-3-client
         env:
-        - name: MONGO_URI
-          value: 'mongodb://auth-mongo-srv:27017/auth'
-        - name: PORT
-          value: '3000'
         - name: JWT_KEY
           valueFrom:
             secretKeyRef:
@@ -30,10 +26,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: client-srv
 spec:
   selector:
-    app: auth
+    app: client
   ports:
     - protocol: TCP
       port: 3000

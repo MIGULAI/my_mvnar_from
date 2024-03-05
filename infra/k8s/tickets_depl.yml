@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-depl
+  name: tickets-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: tickets
   template:
     metadata:
       labels:
-        app: auth
+        app: tickets
     spec:
       containers:
-      - name: auth
-        image: migulai/lecture-3-auth
+      - name: tickets
+        image: migulai/lecture-3-tickets
         env:
         - name: MONGO_URI
-          value: 'mongodb://auth-mongo-srv:27017/auth'
+          value: 'mongodb://tickets-mongo-srv:27017/tickets'
         - name: PORT
           value: '3000'
         - name: JWT_KEY
@@ -26,14 +26,15 @@ spec:
               name: jwt-secret
               key: JWT_KEY
 
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-srv
+  name: tickets-srv
 spec:
   selector:
-    app: auth
+    app: tickets
   ports:
     - protocol: TCP
       port: 3000

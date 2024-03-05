@@ -9,10 +9,11 @@ const start = async () => {
   if (!process.env.MONGO_URI) {
     throw new Error('MONGO_URI must be defined');
   }
+
   try {
     console.log(process.env.MONGO_URI);
 
-    await mongoose.connect(process.env.MONGO_URI as string);
+    await mongoose.connect(process.env.MONGO_URI as string, );
     console.log('Connected to MongoDB');
 
   } catch (err) {
@@ -20,7 +21,7 @@ const start = async () => {
   }
 
   app.listen(process.env.PORT, () => {
-    console.log(`Auth service is running on port ${process.env.PORT}`);
+    console.log(`Ticket service is running on port ${process.env.PORT}`);
   });
 };
 
