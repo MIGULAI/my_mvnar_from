@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import mongoose from 'mongoose';
 
+
 it('returns a 404 if tiket is not found', async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
   await request(app)
@@ -30,3 +31,4 @@ it('returns the ticket if the ticket is found', async () => {
   expect(ticketResponse.body.title).toEqual(title);
   expect(ticketResponse.body.price).toEqual(price);
 });
+

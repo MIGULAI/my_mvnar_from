@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
+import { natsWrapper } from '../../nats_wrapper';
 
 
 it('has a route handler listening to /api/tickets for post requests', async () => {
@@ -21,7 +22,7 @@ it('can only be access if user is sign in', async () => {
 
 it('return a status other than 401 if the user is signed in', async () => {
   const cookie = global.signin();
-  
+
   const response = await request(app)
     .post('/api/tickets')
     .set('Cookie', cookie)
@@ -32,7 +33,7 @@ it('return a status other than 401 if the user is signed in', async () => {
 
 it('return an error if an incalid title is provided', async () => {
   const cookie = global.signin();
-  
+
   await request(app)
     .post('/api/tickets')
     .set('Cookie', cookie)
@@ -50,7 +51,7 @@ it('return an error if an incalid title is provided', async () => {
 });
 it('return an reror if an invalid price is provided', async () => {
   const cookie = global.signin();
-  
+
   await request(app)
     .post('/api/tickets')
     .set('Cookie', cookie)
@@ -74,7 +75,7 @@ it('creates a ticket with valid inputs', async () => {
   const price = 20;
 
   const cookie = global.signin();
-  
+
   await request(app)
     .post('/api/tickets')
     .set('Cookie', cookie)
@@ -87,4 +88,21 @@ it('creates a ticket with valid inputs', async () => {
   expect(tickets.length).toEqual(1);
   expect(tickets[0].price).toEqual(price);
   expect(tickets[0].title).toEqual(title);
+});
+
+it('publishes an event', async () => {
+  const title = 'title';
+  const price = 20;
+
+  const cookie = global.signin();
+
+  await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({
+      title,
+      price
+    }).expect(201);
+
+  expect(natsWrapper.client.publish).toHaveBeenCalled();
 });
