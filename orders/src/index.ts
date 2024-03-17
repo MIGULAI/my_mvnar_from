@@ -2,6 +2,9 @@ import 'express-async-errors';
 import mongoose from 'mongoose';
 import { app } from './app';
 import { natsWrapper } from './nats_wrapper';
+import { TicketCreatedListener } from './events/listenets/ticket_created_listener';
+import { TicketUpdatedListener } from './events/listenets/ticket_updated_listener';
+import { Ticket } from './models/ticket';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -29,16 +32,33 @@ const start = async () => {
       process.env.NATS_URL
     );
 
-    natsWrapper.client.on("close", () => {
+
+    natsWrapper.client.on("close", (data) => {
       console.log("NATS connection closed!");
       process.exit();
     });
 
-    process.on("SIGINT", () => natsWrapper.client.close());
-    process.on("SIGTERM", () => natsWrapper.client.close());
+    // process.on('uncaughtException', (err) => {
+    //   console.log('Uncaught Exception');
+    //   console.error(err);
+    //   // natsWrapper.client.close();
+    // });
+
+    process.on("SIGINT", () => {
+      console.log("SIGINT received");
+      natsWrapper.client.close()
+    });
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received");
+      natsWrapper.client.close()
+    });
+
+    new TicketCreatedListener(natsWrapper.client).listen();
+    new TicketUpdatedListener(natsWrapper.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI as string,);
     console.log('Connected to MongoDB');
+
 
   } catch (err) {
     console.error(err);

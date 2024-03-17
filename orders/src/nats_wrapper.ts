@@ -21,6 +21,8 @@ class NatsWrapper {
         resolve();
       });
       this.client.on("error", (err) => {
+        console.log("NATS connection error", err);
+        // resolve();
         reject(err);
       });
     });
